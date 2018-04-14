@@ -1,6 +1,6 @@
 const dgram = require('dgram')
 const PORT = 6000
-const HOST = '47.92.181.56'
+const HOST = '13.229.84.65'
 
 module.exports = {
   send (message, cb) {
