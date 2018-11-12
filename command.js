@@ -69,10 +69,25 @@ module.exports = {
         } else {
           let up = res[1]
           let connecting = res[2]
-          callback(null, {up, connecting})
+          getMem().then(mem => {
+            callback(null, {up, connecting, mem})
+          }).catch(e => {
+            callback(e)
+          })
+          // callback(null, {up, connecting})
         }
       }
     })
   }
 }
 
+function getMem () {
+  return new Promise((resolve, reject) => {
+    exec("free -m| sed -n '2p'| awk '{print $3}'| tr -d '\n'", (error, stdout, stderr) => {
+      if (error) reject(error)
+      let res = /^\d+$/.exec(stdout)
+      if (res === null) reject(new Error('invalid stdout'))
+      resolve(res[0])
+    })
+  })
+}
