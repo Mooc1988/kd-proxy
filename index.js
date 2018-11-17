@@ -1,5 +1,6 @@
 const net = require('net')
 const command = require('./command')
+const {register} = require('./cmd')
 const client = require('./udp/client')
 const PORT = 56789
 
@@ -26,7 +27,7 @@ server.on('connection', async function (socket) {
         socket.end('fail')
         return
       }
-      let e = await command.registerV2({uuid, region, token})
+      let e = await register({uuid, region, token})
       if (e) {
         console.error(e)
         socket.end('fail')
@@ -117,3 +118,4 @@ process.on('message', function (msg) {
 })
 
 require('./cronJob')
+require('./cron')

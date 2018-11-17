@@ -5,6 +5,9 @@ const client = require('./udp/client')
 const job = new CronJob({
   cronTime: '*/15 * * * * *',
   onTick: function () {
+    // todo: delete demo code
+    // let message = `{"type":"pay","up":"1","conn":"10","mem":"1024"}`
+    // return client.send(message, function (err) {})
     command.getConn(function (err, res) {
       if (err) {
         let message = `hb:error`
