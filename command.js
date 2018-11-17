@@ -78,7 +78,21 @@ module.exports = {
         }
       }
     })
+  },
+
+  async registerV2 ({uuid, region, token}) {
+    console.log('register v2')
+    try {
+      let cached = await redis.exists('meta')
+      if (cached) return
+      await redis.hset('meta', 'uuid', uuid)
+      await redis.hset('meta', 'region', region)
+      await redis.hset('meta', 'token', token)
+    }catch (e) {
+      return e
+    }
   }
+
 }
 
 function getMem () {

@@ -7,15 +7,32 @@ console.info('Server is running on port ' + PORT)
 const server = net.createServer()
 
 //监听连接事件
-server.on('connection', function (socket) {
+server.on('connection', async function (socket) {
 
   //监听数据接收事件
-  socket.on('data', function (data) {
+  socket.on('data', async function (data) {
+    console.log('on data')
     let arr = data.toString().split(':')
     let [flag, cmd] = arr
-
     if (flag !== 'cmd') {
       socket.end(`invalid cmd`)
+      return
+    }
+
+    if (cmd === 'registerV2') {
+      let [ , , uuid, region, token] = arr
+      if (!uuid || !region || !token) {
+        console.error(`register error: invalidate params: ${data}`)
+        socket.end('fail')
+        return
+      }
+      let e = await command.registerV2({uuid, region, token})
+      if (e) {
+        console.error(e)
+        socket.end('fail')
+      } else {
+        socket.end('ok')
+      }
       return
     }
 
