@@ -1,5 +1,5 @@
-const request = require('request-promise')
 const redis = require('../redis')
+const {fetch} = require('../lib')
 
 const register = async function ({uuid, region, token}) {
   try {
@@ -14,15 +14,16 @@ const register = async function ({uuid, region, token}) {
 }
 
 const fetchTransfer = async function ({token, uuid}) {
-  const options = {
+  // todo: delete the demo code
+   uuid = '10521254'
+   token = 'd9ea60aaaf0925429f7de399fc47f99f9cdf7ec8f4462036b8924d66623b30ff'
+  const opt = {
     uri: `https://api.linode.com/v4/linode/instances/${uuid}/stats`,
-    method: 'GET',
-    json: true,
     headers: {'Authorization': `Bearer ${token}`},
   }
 
   try {
-    const res = await request(options)
+    const res = await fetch(opt)
     if (!res.data || !res.data.netv4 || !res.data.netv4.out)
       return {e: new Error('node service err: invalidate fetched res from platform')}
     const latestHour = res.data.netv4.out.slice(275)
