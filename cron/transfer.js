@@ -19,7 +19,7 @@ exports.sendTransfer = new CronJob('*/1 * * * *', async function() {
   }
 })
 
-exports.sendTransfer30Days = new CronJob('*/1 * * * *', async function() {
+exports.sendTransfer30Days = new CronJob('0 */2 * * *', async function() {
   try {
     const uuid = await redis.hget('meta', 'uuid')
     const token = await redis.hget('meta', 'token')
