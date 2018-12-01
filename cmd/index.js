@@ -1,13 +1,14 @@
 const redis = require('../redis')
 const {fetch} = require('../lib')
 
-exports.register = async function ({uuid, region, token}) {
+exports.register = async function ({uuid, region, token, platform}) {
   try {
     let cached = await redis.exists('meta')
     if (cached) return
     await redis.hset('meta', 'uuid', uuid)
     await redis.hset('meta', 'region', region)
     await redis.hset('meta', 'token', token)
+    await redis.hset('meta', 'platform', platform)
   }catch (e) {
     return e
   }
@@ -53,9 +54,15 @@ exports.fetchTransfer30Days = async function ({token, uuid}) {
 
 exports.getTransfer = async function () {
   try {
-    let transfer = await redis.get('transfer')
-    let long_transfer = await redis.get('long_transfer')
-    return {transfer, long_transfer, e: null}
+    let platform = await redis.hget('meta', 'uuid', uuid)
+    if (platform === 'linode') {
+      let transfer = await redis.get('transfer')
+      let long_transfer = await redis.get('long_transfer')
+      return {transfer, long_transfer, e: null}
+    }else {
+      console.log('not linode or no platform')
+      return {e: 'not linode or no platform'}
+    }
   }catch (e) {
     console.error(e)
     return {e}
