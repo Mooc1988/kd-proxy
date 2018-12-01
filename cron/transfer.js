@@ -1,34 +1,36 @@
 const CronJob = require('cron').CronJob;
-const {fetchTransfer, fetchTransfer30Days} = require('../cmd')
 const redis = require('../redis')
-const client = require('../udp/client')
+const {fetchTransfer, fetchTransfer30Days} = require('../cmd')
 
-
-exports.sendTransfer = new CronJob('*/1 * * * *', async function() {
+exports.cacheTransfer = new CronJob('*/5 * * * *', async function() {
   try {
-    const uuid = await redis.hget('meta', 'uuid')
-    const token = await redis.hget('meta', 'token')
+    let uuid = await redis.hget('meta', 'uuid')
+    let token = await redis.hget('meta', 'token')
+
     if (!uuid || !token) return console.error(`sendTransfer err: uuid: ${uuid}, token: ${token}`)
     const {e, out} = await fetchTransfer({token, uuid})
     if (e) return console.error(e)
-    let msg = `{"action":"transfer","out":"${out}","uuid":"${uuid}"}`
-    console.log(msg)
-    client.send(msg,  e => { e && console.error(e)})
+
+    await redis.set('transfer', out, 'EX', 600)
+    console.log('cached transfer: ', out)
+
   } catch (e) {
     console.error(e)
   }
 })
 
-exports.sendTransfer30Days = new CronJob('0 */2 * * *', async function() {
+exports.cacheTransfer30Days = new CronJob('0 */2 * * *', async function() {
   try {
-    const uuid = await redis.hget('meta', 'uuid')
-    const token = await redis.hget('meta', 'token')
+    let uuid = await redis.hget('meta', 'uuid')
+    let token = await redis.hget('meta', 'token')
+
     if (!uuid || !token) return console.error(`sendTransfer err: uuid: ${uuid}, token: ${token}`)
     const {e, out} = await fetchTransfer30Days({token, uuid})
     if (e) return console.error(e)
-    let msg = `{"action":"transfer","fields":"long_transfer","out":"${out}","uuid":"${uuid}"}`
-    console.log(msg)
-    client.send(msg,  e => { e && console.error(e)})
+
+    await redis.set('long_transfer', out, 'EX', 10800)
+    console.log('cached long_transfer: ', out)
+
   } catch (e) {
     console.error(e)
   }
