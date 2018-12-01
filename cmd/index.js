@@ -54,7 +54,7 @@ exports.fetchTransfer30Days = async function ({token, uuid}) {
 
 exports.getTransfer = async function () {
   try {
-    let platform = await redis.hget('meta', 'uuid', uuid)
+    let platform = await redis.hget('meta', 'platform')
     if (platform === 'linode') {
       let transfer = await redis.get('transfer')
       let long_transfer = await redis.get('long_transfer')
