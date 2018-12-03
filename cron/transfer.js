@@ -4,6 +4,11 @@ const {fetchTransfer, fetchTransfer30Days} = require('../cmd')
 
 exports.cacheTransfer = new CronJob('*/5 * * * *', async function() {
   try {
+
+    let fetchingTransfer = await redis.get('fetchingTransfer')
+    if (fetchingTransfer) return console.log('fetching transfer')
+    redis.set('fetchingTransfer', '1', 'EX', 120)
+
     let uuid = await redis.hget('meta', 'uuid')
     let token = await redis.hget('meta', 'token')
 
@@ -21,6 +26,11 @@ exports.cacheTransfer = new CronJob('*/5 * * * *', async function() {
 
 exports.cacheTransfer30Days = new CronJob('0 */2 * * *', async function() {
   try {
+
+    let fetchingTransfer30Days = await redis.get('fetchingTransfer30Days')
+    if (fetchingTransfer30Days) return console.log('fetching fetchingTransfer30Days')
+    redis.set('fetchingTransfer30Days', '1', 'EX', 120)
+
     let uuid = await redis.hget('meta', 'uuid')
     let token = await redis.hget('meta', 'token')
 
