@@ -4,7 +4,7 @@ function collectValue () {
   const {date, hour} = getTimeKey()
   const yesterday = getYesterday()
 
-  console.log(date, hour)
+  // console.log(date, hour)
 
   const map = new Map([
     ['up', 'ipsec:up'],
