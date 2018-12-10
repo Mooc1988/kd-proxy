@@ -2,6 +2,7 @@ const net = require('net')
 const command = require('./command')
 const {register} = require('./cmd')
 const client = require('./udp/client')
+const redis = require('./redis')
 const PORT = 56789
 
 console.info('Server is running on port ' + PORT)
@@ -33,6 +34,18 @@ server.on('connection', async function (socket) {
         socket.end('fail')
       } else {
         socket.end('ok')
+      }
+      return
+    }
+
+    // ReducedTransfer
+    if (cmd === 'ReducedTransfer') {
+      try {
+        await redis.set(`transferReduced:${new Date().getDate()}`, 1, 'EX', 3600 * 25)
+        socket.end('ok')
+      } catch (e) {
+        console.error(e)
+        socket.end('fail')
       }
       return
     }
@@ -117,5 +130,5 @@ process.on('message', function (msg) {
   console.log('msg is ', msg)
 })
 
-require('./cronJob')
+// require('./cronJob')
 require('./cron')

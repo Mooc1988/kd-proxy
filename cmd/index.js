@@ -68,3 +68,22 @@ exports.getTransfer = async function () {
     return {e}
   }
 }
+
+exports.getLocalTransfer = async function () {
+  try {
+    let {date, hour} = getTransferKey()
+    let transfer = await redis.get(date)
+    let long_transfer = await redis.get(date + hour)
+    return {transfer, long_transfer, e: null}
+  }catch (e) {
+    console.error(e)
+    return {e}
+  }
+}
+
+function getTransferKey () {
+  let [dateString, hourString] = new Date().toJSON().split('T')
+  date = dateString.replace(/[-]/g, '')
+  hour = hourString.split(':')[0]
+  return {date, hour}
+}
