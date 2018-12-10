@@ -56,10 +56,13 @@ function getYesterday () {
 
 exports.readCollected = async function () {
   try {
-    const [up, mem, hour_transfer, transfer, yesterday_transfer] = await collectValue()
+    let [up, mem, hour_transfer, transfer, yesterday_transfer] = await collectValue()
+    if (hour_transfer) hour_transfer = Math.round(Number(hour_transfer)/1024)
+    if (transfer) transfer = Math.round(Number(transfer)/1024)
+    if (yesterday_transfer) yesterday_transfer = (Math.round(Number(yesterday_transfer)/1024))
     const data = {up, mem, hour_transfer, transfer, yesterday_transfer}
     for (k in data) {
-      if(!data[k]) delete data[k]
+      if(!data[k] && data[k] !== 0) delete data[k]
     }
     return {data, e: null}
   } catch (e) {
