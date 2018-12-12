@@ -40,8 +40,9 @@ server.on('connection', async function (socket) {
 
     // ReducedTransfer
     if (cmd === 'ReducedTransfer') {
+      let [ , , date] = arr
       try {
-        await redis.set(`transferReduced:${new Date().getDate()}`, 1, 'EX', 3600 * 25)
+        await redis.set(`transferReduced:${date}`, 1, 'EX', 3600 * 25)
         socket.end('ok')
       } catch (e) {
         console.error(e)
