@@ -1,13 +1,12 @@
 const redis = require('../redis')
 const {fetch} = require('../lib')
 
-exports.register = async function ({uuid, region, token, platform}) {
+exports.register = async function ({uuid, region, platform}) {
   try {
     // let cached = await redis.exists('meta')
     // if (cached) return
     await redis.hset('meta', 'uuid', uuid)
     await redis.hset('meta', 'region', region)
-    await redis.hset('meta', 'token', token)
     await redis.hset('meta', 'platform', platform)
   }catch (e) {
     return e

@@ -22,13 +22,13 @@ server.on('connection', async function (socket) {
     }
 
     if (cmd === 'registerV2') {
-      let [ , , uuid, region, token, platform] = arr
-      if (!uuid || !region || !token || !platform) {
+      let [ , , uuid, region, platform] = arr
+      if (!uuid || !region || !platform) {
         console.error(`register error: invalidate params: ${data}`)
         socket.end('fail')
         return
       }
-      let e = await register({uuid, region, token, platform})
+      let e = await register({uuid, region, platform})
       if (e) {
         console.error(e)
         socket.end('fail')
