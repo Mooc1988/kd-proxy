@@ -17,7 +17,8 @@ function collectValue () {
     ['hourTransfer', `tr:${date}${hour}`],
     ['dayTransfer', `tr:${date}`],
     ['yesterdayTransfer', `tr:${yesterday}`],
-    ['reduced', `transferReduced:${reducedDay}`]
+    ['reduced', `transferReduced:${reducedDay}`],
+    ['version', `version`]
   ])
 
   const readCollection = `
@@ -26,11 +27,12 @@ function collectValue () {
     local hourTransfer=redis.call("get",ARGV[3])
     local dayTransfer=redis.call("get",ARGV[4])
     local sentFlag=redis.call("get",ARGV[6])
+    local version=redis.call("hget","meta",ARGV[7])
     if sentFlag then
-      return {up,mem,hourTransfer,dayTransfer}
+      return {up,mem,hourTransfer,dayTransfer,version}
     else
       local yesterdayTransfer = redis.call("get",ARGV[5])
-      return {up,mem,hourTransfer,dayTransfer,yesterdayTransfer}
+      return {up,mem,hourTransfer,dayTransfer,version,yesterdayTransfer}
     end
   `
 
@@ -64,9 +66,9 @@ function toKb (bytes) {
 }
 
 exports.readCollected = async function () {
-  let {result: [up, mem, hour_transfer_bytes, transfer_bytes, yesterday_transfer_bytes], reducedDay} = await collectValue()
+  let {result: [up, mem, hour_transfer_bytes, transfer_bytes, version, yesterday_transfer_bytes], reducedDay} = await collectValue()
   let [hour_transfer, transfer, yesterday_transfer] = [hour_transfer_bytes, transfer_bytes, yesterday_transfer_bytes].map(t => {return t ? toKb(t): null})
-  const data = {up, mem, hour_transfer, transfer, yesterday_transfer}
+  const data = {up, mem, hour_transfer, transfer, version, yesterday_transfer}
   for (k in data) {
     if(!data[k] && data[k] !== 0) delete data[k]
   }
