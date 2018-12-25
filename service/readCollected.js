@@ -9,7 +9,7 @@ function collectValue () {
   const timeStampCN = new Date().getTime() + EIGHT_HOUR_MS
   const {date, hour} = getKeyByTime(timeStampCN)
   const yesterday = getKeyByTime(timeStampCN - DAY_MS, false)
-  const reducedDay = new Date(timeStampCN).getDate()
+  const reducedDay = new Date(timeStampCN).getUTCDate()
 
   const map = new Map([
     ['up', 'ipsec:up'],
@@ -50,11 +50,11 @@ function collectValue () {
 
 function getKeyByTime (ts, needHour = true) {
   const d = new Date(ts)
-  const year = d.getFullYear()
-  const month = toTimeString(d.getMonth() + 1)
-  const day = toTimeString(d.getDate())
+  const year = d.getUTCFullYear()
+  const month = toTimeString(d.getUTCMonth() + 1)
+  const day = toTimeString(d.getUTCDate())
   const date = `${year}${month}${day}`
-  return needHour ? {date, hour: toTimeString(d.getHours())} : date
+  return needHour ? {date, hour: toTimeString(d.getUTCHours())} : date
 }
 
 function toTimeString (n) {
