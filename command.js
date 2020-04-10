@@ -24,7 +24,12 @@ module.exports = {
         })
         redis.set(username, password).then(function (res) {
           if (res === 'OK') {
-            callback(null)
+            redis.get(username).then(pwd => {
+              if (pwd) return callback(null, pwd)
+              callback(new Error('no password'))
+            }).catch( err => {
+              callback(err)
+            })
           } else {
             callback(new Error('save key failed'))
           }
